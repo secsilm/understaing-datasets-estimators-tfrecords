@@ -20,23 +20,30 @@ Google 在 2017 年 9 月 12 号的博文 [Introduction to TensorFlow Datasets a
 你可以使用 `python cifar10-estimator-dataset.py --help` 来查看可选参数：
 
 ```
-usage: cifar10-estimator-dataset.py [-h] [--num_epochs NUM_EPOCHS]
-                                    [--batch_size BATCH_SIZE]
-                                    [--learning_rate LEARNING_RATE]
-                                    [--dropout_rate DROPOUT_RATE]
-                                    [--train_dataset TRAIN_DATASET]
-                                    [--eval_dataset EVAL_DATASET]
-                                    [--test_dataset TEST_DATASET]
-                                    [--model_dir MODEL_DIR]
+       USAGE: cifar10-estimator-dataset.py [flags]
+flags:
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --num_epochs NUM_EPOCHS
-                        Number of training epochs
-  --batch_size BATCH_SIZE
-                        Batch size
-  --learning_rate LEARNING_RATE
-                        Learning rate
+cifar10-estimator-dataset.py:
+  --batch_size: Batch size
+    (default: '64')
+    (an integer)
+  --dropout_rate: Dropout rate
+    (default: '0.5')
+    (a number)
+  --eval_dataset: Filename of evaluation dataset
+    (default: 'eval.tfrecords')
+  --learning_rate: Learning rate
+    (default: '0.001')
+    (a number)
+  --model_dir: Filename of testing dataset
+    (default: 'models/cifar10_cnn_model')
+  --num_epochs: Number of training epochs
+    (default: '10')
+    (an integer)
+  --test_dataset: Filename of testing dataset
+    (default: 'test.tfrecords')
+  --train_dataset: Filename of training dataset
+    (default: 'train.tfrecords')
 ```
 
 TFRecords 和 TensorBoard 文件（包括我做的所有 run）较大，没有放到 GitHub 上，你可以从百度盘上获取：
@@ -224,6 +231,23 @@ eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
 2. 定义模型函数，返回 `tf.estimator.EstimatorSpec` 对象。
 3. 使用模型函数创建 `tf.estimator.Estimator` 对象。
 4. 使用创建好的对象 train and evaluate。
+
+## Notes
+
+### 关于 `num_epochs`
+
+如果你设置 `num_epochs` 为比如说 30，然而你在训练的时候看到类似如下的控制台输出：
+
+```
+INFO:tensorflow:global_step/sec: 0.476364
+INFO:tensorflow:loss = 0.137512, step = 14901 (209.924 sec)
+INFO:tensorflow:global_step/sec: 0.477139
+INFO:tensorflow:loss = 0.0203241, step = 15001 (209.583 sec)
+INFO:tensorflow:global_step/sec: 0.477511
+INFO:tensorflow:loss = 0.132834, step = 15101 (209.419 sec)
+```
+
+你可以看到 `step` 已经上万了，这是因为这里的 `step` 指的是一个 batch 的训练迭代，而 `num_epochs` 设为 30 意味着你要把整个训练集遍历 30 次（也是我们通常的做法）。也就是说，假如你有 50000 个样本，batch 大小为 50，那么你的数据集将被切分为 1000 个 batch，也就是遍历一遍数据集需要 1000 step，所以说 `num_epochs` 为 30 时，你的程序需要到 `step=30000` 才会训练结束。所以切记 `num_epochs` 表示的是整个训练集的迭代次数。
 
 ## References
 
