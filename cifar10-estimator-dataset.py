@@ -1,3 +1,9 @@
+'''
+Using tf.estimator and tf.data to train a cnn model in TensorFlow 1.4.
+
+GitHub: https://github.com/secsilm/understaing-datasets-estimators-tfrecords
+Chinese blog: 
+'''
 import tensorflow as tf
 import os
 import json
@@ -135,7 +141,7 @@ def parser(record):
 def save_hp_to_json():
     '''Save hyperparameters to a json file'''
     filename = os.path.join(FLAGS.model_dir, 'hparams.json')
-    hparams = FLAGS.__flags
+    hparams = FLAGS.flag_values_dict()
     with open(filename, 'w') as f:
         json.dump(hparams, f, indent=4, sort_keys=True)
 

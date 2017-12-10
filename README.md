@@ -15,6 +15,34 @@ Google 在 2017 年 9 月 12 号的博文 [Introduction to TensorFlow Datasets a
 
 > Note：本篇博文中的模型并不是结果最好的模型，仅仅是为了展示如何将 Estimators 和 Datasets 结合起来使用。
 
+## Usage
+
+你可以使用 `python cifar10-estimator-dataset.py --help` 来查看可选参数：
+
+```
+usage: cifar10-estimator-dataset.py [-h] [--num_epochs NUM_EPOCHS]
+                                    [--batch_size BATCH_SIZE]
+                                    [--learning_rate LEARNING_RATE]
+                                    [--dropout_rate DROPOUT_RATE]
+                                    [--train_dataset TRAIN_DATASET]
+                                    [--eval_dataset EVAL_DATASET]
+                                    [--test_dataset TEST_DATASET]
+                                    [--model_dir MODEL_DIR]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --num_epochs NUM_EPOCHS
+                        Number of training epochs
+  --batch_size BATCH_SIZE
+                        Batch size
+  --learning_rate LEARNING_RATE
+                        Learning rate
+```
+
+TFRecords 和 TensorBoard 文件（包括我做的所有 run）较大，没有放到 GitHub 上，你可以从百度盘上获取：
+- [TFRecords](https://pan.baidu.com/s/1jImZOGY)（133.4 MB），密码：`dp7u`
+- [TensorBoard](https://pan.baidu.com/s/1dFew7SH)（1.45 GB），密码：`6885`
+
 ## 模型架构
 
 为了让大家对模型架构先有个清晰地了解，我先把 TensorBoard （不熟悉 TensorBoard 的话可以参考[这里](http://blog.csdn.net/u010099080/article/details/77426577)）中显示的模型架构图贴出来（数据集我也就不介绍了，这是个很常用的数据集，如有不熟悉的可以参看[这里](http://blog.csdn.net/u010099080/article/details/53906810#%E6%95%B0%E6%8D%AE%E9%9B%86)）：
@@ -204,3 +232,5 @@ eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
 3. [Creating Estimators in tf.estimator | TensorFlow](https://www.tensorflow.org/extend/estimators)
 4. [Example using TensorFlow Estimator, Experiment & Dataset on MNIST data](https://gist.github.com/peterroelants/9956ec93a07ca4e9ba5bc415b014bcca)
 5. [Higher-Level APIs in TensorFlow – Onfido Tech – Medium](https://medium.com/onfido-tech/higher-level-apis-in-tensorflow-67bfb602e6c0)
+
+## END
