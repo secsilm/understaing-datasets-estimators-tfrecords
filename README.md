@@ -232,6 +232,23 @@ eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
 3. 使用模型函数创建 `tf.estimator.Estimator` 对象。
 4. 使用创建好的对象 train and evaluate。
 
+## Notes
+
+### 关于 `num_epochs`
+
+如果你设置 `num_epochs` 为比如说 30，然而你在训练的时候看到类似如下的控制台输出：
+
+```
+INFO:tensorflow:global_step/sec: 0.476364
+INFO:tensorflow:loss = 0.137512, step = 14901 (209.924 sec)
+INFO:tensorflow:global_step/sec: 0.477139
+INFO:tensorflow:loss = 0.0203241, step = 15001 (209.583 sec)
+INFO:tensorflow:global_step/sec: 0.477511
+INFO:tensorflow:loss = 0.132834, step = 15101 (209.419 sec)
+```
+
+你可以看到 `step` 已经上万了，这是因为这里的 `step` 指的是一个 batch 的训练迭代，而 `num_epochs` 设为 30 意味着你要把整个训练集遍历 30 次（也是我们通常的做法）。也就是说，假如你有 50000 个样本，batch 大小为 50，那么你的数据集将被切分为 1000 个 batch，也就是遍历一遍数据集需要 1000 step，所以说 `num_epochs` 为 30 时，你的程序需要到 `step=30000` 才会训练结束。所以切记 `num_epochs` 表示的是整个训练集的迭代次数。
+
 ## References
 
 1. [Introduction to TensorFlow Datasets and Estimators](https://developers.googleblog.com/2017/09/introducing-tensorflow-datasets.html)
