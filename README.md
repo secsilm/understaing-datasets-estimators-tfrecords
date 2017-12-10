@@ -20,23 +20,30 @@ Google 在 2017 年 9 月 12 号的博文 [Introduction to TensorFlow Datasets a
 你可以使用 `python cifar10-estimator-dataset.py --help` 来查看可选参数：
 
 ```
-usage: cifar10-estimator-dataset.py [-h] [--num_epochs NUM_EPOCHS]
-                                    [--batch_size BATCH_SIZE]
-                                    [--learning_rate LEARNING_RATE]
-                                    [--dropout_rate DROPOUT_RATE]
-                                    [--train_dataset TRAIN_DATASET]
-                                    [--eval_dataset EVAL_DATASET]
-                                    [--test_dataset TEST_DATASET]
-                                    [--model_dir MODEL_DIR]
+       USAGE: cifar10-estimator-dataset.py [flags]
+flags:
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --num_epochs NUM_EPOCHS
-                        Number of training epochs
-  --batch_size BATCH_SIZE
-                        Batch size
-  --learning_rate LEARNING_RATE
-                        Learning rate
+cifar10-estimator-dataset.py:
+  --batch_size: Batch size
+    (default: '64')
+    (an integer)
+  --dropout_rate: Dropout rate
+    (default: '0.5')
+    (a number)
+  --eval_dataset: Filename of evaluation dataset
+    (default: 'eval.tfrecords')
+  --learning_rate: Learning rate
+    (default: '0.001')
+    (a number)
+  --model_dir: Filename of testing dataset
+    (default: 'models/cifar10_cnn_model')
+  --num_epochs: Number of training epochs
+    (default: '10')
+    (an integer)
+  --test_dataset: Filename of testing dataset
+    (default: 'test.tfrecords')
+  --train_dataset: Filename of training dataset
+    (default: 'train.tfrecords')
 ```
 
 TFRecords 和 TensorBoard 文件（包括我做的所有 run）较大，没有放到 GitHub 上，你可以从百度盘上获取：
