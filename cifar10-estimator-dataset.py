@@ -28,12 +28,11 @@ FLAGS = flags.FLAGS
 
 def cifar_model_fn(features, labels, mode):
     """Model function for cifar10"""
-    # labels = tf.Print(labels, [labels], 'Labels:')
-    # 输入层
+    # Input layer
     x = tf.reshape(features, [-1, 32, 32, 3])
 
     regularizer = tf.contrib.layers.l2_regularizer(scale=0.1)
-    # 第一层卷积层
+
     x = tf.layers.conv2d(inputs=x, filters=64, kernel_size=[
                              3, 3], padding='same', activation=tf.nn.relu, kernel_regularizer=regularizer, name='CONV1')
     x = tf.layers.batch_normalization(
@@ -43,6 +42,7 @@ def cifar_model_fn(features, labels, mode):
                             3, 3], padding='same', activation=tf.nn.relu, kernel_regularizer=regularizer, name='CONV2')
     x = tf.layers.batch_normalization(
         inputs=x, training=mode == tf.estimator.ModeKeys.TRAIN, name='BN2')
+    
     x = tf.layers.conv2d(inputs=x, filters=128, kernel_size=[
                             3, 3], padding='same', activation=tf.nn.relu, kernel_regularizer=regularizer, name='CONV3')
     x = tf.layers.batch_normalization(
@@ -50,36 +50,32 @@ def cifar_model_fn(features, labels, mode):
     
     x = tf.layers.conv2d(inputs=x, filters=128, kernel_size=[
                              3, 3], padding='same', activation=tf.nn.relu, kernel_regularizer=regularizer, name='CONV4')
-    # 第一层 BN 层
     x = tf.layers.batch_normalization(
         inputs=x, training=mode == tf.estimator.ModeKeys.TRAIN, name='BN4')
     
-    # 第一层池化层
     x = tf.layers.max_pooling2d(inputs=x, pool_size=[
                                     3, 3], strides=2, padding='same', name='POOL1')
-    # 第二层卷积层
+
     x = tf.layers.conv2d(inputs=x, filters=128, kernel_size=3, padding='same',
                              activation=tf.nn.relu, kernel_regularizer=regularizer, name='CONV5')
-    # 第二层 BN 层
     x = tf.layers.batch_normalization(
         inputs=x, training=mode == tf.estimator.ModeKeys.TRAIN, name='BN5')
-    # 第二层池化层
+    
     x = tf.layers.max_pooling2d(inputs=x, pool_size=[
                                     3, 3], strides=2, padding='same', name='POOL2')
-    # 全连接层
+    # Dense layer
     x = tf.reshape(x, [-1, 8 * 8 * 128])
 
     x = tf.layers.dense(inputs=x, units=512, activation=tf.nn.relu,
                              kernel_regularizer=regularizer, name='DENSE1')
     x = tf.layers.dense(inputs=x, units=512, activation=tf.nn.relu,
                              kernel_regularizer=regularizer, name='DENSE2')
-    # print('dense', dense.shape)
     x = tf.layers.dropout(inputs=x, rate=FLAGS.dropout_rate,
                                 training=mode == tf.estimator.ModeKeys.TRAIN, name='DROPOUT')
     logits = tf.layers.dense(inputs=x, units=10,
                              kernel_regularizer=regularizer, name='FINAL')
 
-    # 预测
+    # Predicition
     predictions = {
         'classes': tf.argmax(input=logits, axis=1, name='classes'),
         'probabilities': tf.nn.softmax(logits, name='softmax_tensor')
@@ -88,26 +84,24 @@ def cifar_model_fn(features, labels, mode):
     if mode == tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
-    # 计算损失（对于 TRAIN 和 EVAL 模式）
+    # Loss for train and eval
     onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
     # print('onehot_labels', onehot_labels.shape)
     loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, scope='LOSS')
     # print(labels.shape, predictions['classes'].shape)
     
-    # 评估方法（对于 EVAL 模式）
     accuracy, update_op = tf.metrics.accuracy(
         labels=labels, predictions=predictions['classes'], name='accuracy')
     batch_acc = tf.reduce_mean(tf.cast(
         tf.equal(tf.cast(labels, tf.int64), predictions['classes']), tf.float32))
     tf.summary.scalar('batch_acc', batch_acc)
-
     tf.summary.scalar('streaming_acc', update_op)
     # tf.summary.scalar('accuracy', accuracy)
     # eval_metric_ops = {
     #     'accuracy': tf.metrics.accuracy(labels=labels, predictions=predictions['classes'], name='accuracy')
     # }
 
-    # 训练配置（对于 TRAIN 模式）
+    # Train
     if mode == tf.estimator.ModeKeys.TRAIN:
         # tensors_to_log = {
         #     'Accuracy': accuracy,
@@ -170,10 +164,10 @@ def main(unused_argv):
     cifar10_classifier = tf.estimator.Estimator(
         model_fn=cifar_model_fn, model_dir=FLAGS.model_dir)
 
-    # 训练模型
+    # Train
     cifar10_classifier.train(input_fn=train_input_fn)
 
-    # 验证模型
+    # Evaluation
     eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
     print(eval_results)
 
