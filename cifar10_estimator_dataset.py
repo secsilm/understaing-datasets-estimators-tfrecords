@@ -140,6 +140,11 @@ def save_hp_to_json():
         json.dump(hparams, f, indent=4, sort_keys=True)
 
 
+def get_estimator(config):
+    '''Return the model as a Tensorflow Estimator object.'''
+    return tf.estimator.Estimator(model_fn=cifar_model_fn, config=config)
+
+
 def main(unused_argv):
 
     def train_input_fn():
@@ -161,8 +166,9 @@ def main(unused_argv):
         features, labels = eval_iterator.get_next()
         return features, labels
 
-    cifar10_classifier = tf.estimator.Estimator(
-        model_fn=cifar_model_fn, model_dir=FLAGS.model_dir)
+    config = tf.estimator.RunConfig()
+    config = config.replace(model_dir=FLAGS.model_dir)
+    cifar10_classifier = get_estimator(config=config)
 
     # Train
     cifar10_classifier.train(input_fn=train_input_fn)

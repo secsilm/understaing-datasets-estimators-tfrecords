@@ -15,7 +15,13 @@ Google 在 2017 年 9 月 12 号的博文 [Introduction to TensorFlow Datasets a
 
 > Note：本篇博文中的模型并不是结果最好的模型，仅仅是为了展示如何将 Estimators 和 Datasets 结合起来使用。
 
-## Usage
+## 更新
+
+我会在这里列出对本文的更新。
+
+- 2018 年 5 月 1 日：增加使用已训练的模型进行预测的 demo。
+
+## 用法
 
 你可以使用 `python cifar10-estimator-dataset.py --help` 来查看可选参数：
 
@@ -222,6 +228,51 @@ eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
 
 ![graphs](https://i.imgur.com/p9aHnKU.png)
 *GRAPHS 面板*
+
+## 使用训练好的模型进行预测
+
+在训练好模型之后，模型文件已经保存到了 `FLAGS.model_dir` 中，那么在对新样本进行预测时只需要调用 estimator 的 `predict()` 方法进行预测就行了。
+
+```python
+def infer(argv=None):
+    '''Run the inference and return the result.'''
+    config = tf.estimator.RunConfig()
+    config = config.replace(model_dir=FLAGS.saved_model_dir)
+    estimator = get_estimator(config)
+    predict_input_fn = tf.estimator.inputs.numpy_input_fn(
+        x=load_image(), shuffle=False)
+    result = estimator.predict(input_fn=predict_input_fn)
+    for r in result:
+        print(r)
+
+
+def load_image():
+    '''Load image into numpy array.'''
+    images = np.zeros((10, 3072), dtype='float32')
+    for i, file in enumerate(Path('predict-images/').glob('*.png')):
+        image = np.array(Image.open(file)).reshape(3072)
+        images[i, :] = image
+    return images
+```
+
+这是主要的两个函数，完整代码见 [`cifar10-estimator-dataset-predict.py`](understaing-datasets-estimators-tfrecords/cifar10-estimator-dataset-predict.py)。
+
+有几点需要说明：
+
+- 我把要预测的图片放在了 `predict-images/` 文件夹下，你可以自由更改这个地址。
+- 这里我使用了 `tf.estimator.inputs.numpy_input_fn()` 来作为预测的输入函数，该函数可以直接接受 numpy array 作为输入。除此之外，你还可以像 [`cifar10-estimator-dataset.py` 中的 `train_input_fn()`](https://github.com/secsilm/understaing-datasets-estimators-tfrecords/blob/master/cifar10-estimator-dataset.py#L145) 一样，使用 `tf.data.Dataset.from_tensor_slices()` 或者 `tf.data.TFRecordDataset()`，再结合 `Dataset.make_one_shot_iterator()` 来定义一个预测输入函数。
+
+用法很简单，假设你的模型文件放在 `models/cifar10` 下，那么在命令行执行下面的语句即可：
+
+```python
+python cifar10_estimator_dataset_predict.py --saved_model_dir models/cifar10
+```
+
+`--saved_model_dir` 的默认值是 `models/adam`。
+
+执行完后可以看到类似下面这样的输出结果，当然下面的结果很差，由于时间有限我也没有过多的调模型，这里只是说明下过程：
+
+![predict](https://i.imgur.com/4IHRVip.png)
 
 ## Summary
 
