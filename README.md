@@ -260,7 +260,7 @@ def load_image():
 有几点需要说明：
 
 - 我把要预测的图片放在了 `predict-images/` 文件夹下，你可以自由更改这个地址。
-- 这里我使用了 `tf.estimator.inputs.numpy_input_fn()` 来作为预测的输入函数，该函数可以直接接受 numpy array 作为输入。除此之外，你还可以像 [`cifar10_estimator_dataset.py` 中的 `train_input_fn()`](https://github.com/secsilm/understaing-datasets-estimators-tfrecords/blob/master/cifar10_estimator_dataset.py#L145) 一样，使用 `tf.data.Dataset.from_tensor_slices()` 或者 `tf.data.TFRecordDataset()`，再结合 `Dataset.make_one_shot_iterator()` 来定义一个预测输入函数。
+- 这里我使用了 `tf.estimator.inputs.numpy_input_fn()` 来作为预测的输入函数，该函数可以直接接受 numpy array 作为输入。除此之外，你还可以像 [`cifar10_estimator_dataset.py` 中的 `train_input_fn()`](https://github.com/secsilm/understaing-datasets-estimators-tfrecords/blob/master/cifar10_estimator_dataset.py#L150) 一样，使用 `tf.data.Dataset.from_tensor_slices()` 或者 `tf.data.TFRecordDataset()`，再结合 `Dataset.make_one_shot_iterator()` 来定义一个预测输入函数。
 
 用法很简单，假设你的模型文件放在 `models/cifar10` 下，那么在命令行执行下面的语句即可：
 
