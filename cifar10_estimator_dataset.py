@@ -2,7 +2,7 @@
 Using tf.estimator and tf.data to train a cnn model in TensorFlow 1.4.
 
 GitHub: https://github.com/secsilm/understaing-datasets-estimators-tfrecords
-Chinese blog: 
+Chinese blog: https://alanlee.fun/2017/12/22/understanding-estimators-datasets/
 '''
 import tensorflow as tf
 import os
@@ -22,7 +22,7 @@ flags.DEFINE_string('eval_dataset', 'eval.tfrecords',
 flags.DEFINE_string('test_dataset', 'test.tfrecords',
                     'Filename of testing dataset')
 flags.DEFINE_string('model_dir', 'models/cifar10_cnn_model',
-                    'Filename of testing dataset')
+                    'Directory to save models')
 FLAGS = flags.FLAGS
 
 
